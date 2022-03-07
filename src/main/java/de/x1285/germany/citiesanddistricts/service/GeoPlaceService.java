@@ -5,10 +5,7 @@ import de.x1285.germany.citiesanddistricts.model.GeoPlaceType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -58,41 +55,35 @@ public class GeoPlaceService {
                 .collect(Collectors.toList());
     }
 
-    private Comparator<? super GeoPlace> getGeoPlaceComparator() {
+    public static Comparator<? super GeoPlace> getGeoPlaceComparator() {
         return (Comparator<GeoPlace>) (o1, o2) -> {
-            final GeoPlaceType o1Type = o1.getType();
-            final GeoPlaceType o2Type = o2.getType();
-            if (o1Type != o2Type) {
-                switch (o1.getType()) {
-                    case ORT:
-                        return -1;
-                    case ORTSTEIL:
-                        if (o2Type == GeoPlaceType.ORT) return 1;
-                        return -1;
-                    case KREIS:
-                        if (o2Type != GeoPlaceType.BUNDESLAND) return -1;
-                    case BUNDESLAND:
-                        if (o2Type != GeoPlaceType.UNBEKANNT) return -1;
-                        else return 1;
-                    case UNBEKANNT:
-                        return 1;
-                }
+            if (Objects.equals(o1.getId(), o2.getId())) {
+                return 0;
             }
             int population = 0;
             if (o1.getPopulation() != null && o2.getPopulation() != null) {
                 population = o2.getPopulation().compareTo(o1.getPopulation());
+            } else if (o1.getPopulation() != null) {
+                return -1;
+            } else if (o2.getPopulation() != null) {
+                return 1;
             }
-            int levels = o2.getLevel().compareTo(o1.getLevel());
-            int result = levels + population;
-            if (result == 0) {
+            if (population == 0) {
+                final GeoPlaceType o1Type = o1.getType();
+                final GeoPlaceType o2Type = o2.getType();
+                if (o1Type != o2Type) {
+                    return Integer.compare(o1Type.getCardinality(), o2Type.getCardinality());
+                }
                 if (o1.getParentId() == null) {
                     return o2.getParentId() != null ? 1 : -1;
                 }
                 if (o2.getParentId() == null) {
                     return o1.getParentId() != null ? -1 : 1;
                 }
+                return o2.getLevel().compareTo(o1.getLevel());
+            } else {
+                return population;
             }
-            return result;
         };
     }
 }

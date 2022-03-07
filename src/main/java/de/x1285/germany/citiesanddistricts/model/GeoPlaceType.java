@@ -5,17 +5,17 @@ import lombok.Getter;
 @Getter
 public enum GeoPlaceType {
 
-    BUNDESLAND("Bundesland"),
-    KREIS("Kreis", "Landkreis", "Amt", "Kreisstadt", "Stadtkreis"),
     ORT("Ort", "Stadt", "kreisfreie Stadt", "ehem. Stadt", "ehem. Gemeinde", "Dom- und Kaiserstadt",
             "Kurort, Stadt", "Höhenluftkurort", "Bergstadt", "Freie und Hansestadt", "Schöfferstadt", "Liebenbachstadt",
             "Hansestadt", "Sickingenstadt", "Universitätsstadt", "Loreleystadt", "ehem. Ort", "Brüder-Grimm-Stadt",
             "Wissenschaftsstadt", "Gemeinde", "aufgelöste Gemeinde", "Dorf", "Markt", "Kreisangehörige Gemeinde",
             "Kurort", "Landeshauptstadt", "Karolingerstadt", "Ortschaft", "Kreisfrei Stadt", "Gemeinde", "Lutherstadt", "Gneisenaustadt, Stadt", "documenta-Stadt"),
+    KREIS("Kreis", "Landkreis", "Amt", "Kreisstadt", "Stadtkreis"),
     ORTSTEIL("Ortsteil", "Stadtviertel", "Stadtteil (ehem. Stadt)", "Stadtteil", "Gemarkung",
-            "Verwaltungsbezirk", "Quartier", "Flecken", "Ortsbezirk", "äußerer Stadtbezirk", "Stadtbezirk", "Stadtteil von Roßlau",
+            "Verwaltungsbezirk", "Quartier", "Flecken", "Ortsbezirk", "äußerer Stadtbezirk", "Stadtteil von Roßlau",
             "Statistischer Bezirk", "Schachdorf"),
-    UNBEKANNT();
+    UNBEKANNT(),
+    BUNDESLAND("Bundesland");
 
     private final String name;
     private final String[] aliases;
@@ -49,5 +49,9 @@ public enum GeoPlaceType {
             }
         }
         return false;
+    }
+
+    public int getCardinality() {
+        return ordinal();
     }
 }
